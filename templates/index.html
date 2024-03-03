@@ -1,14 +1,44 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Task Manager</h1>
-    <!-- Add your HTML for displaying and managing tasks -->
+
+    <header>
+        <h1>Task Manager</h1>
+    </header>
+
+    <h2>TODO</h2>
+
+    <ul> <!-- Corrected from <u2> -->
+        {% for task in tasks %}
+            <li>{{ task['name'] }}: {{ task['info'] }}  #{{ task['status'] }}
+
+                <div class="task-actions">
+                    <button onclick="location.href='{{ url_for('update_task', task_id=task['_id']) }}'">Update</button>
+                    <button onclick="location.href='{{ url_for('delete_task', task_id=task['_id']) }}'">Delete</button>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <form action="{{ url_for('add_task') }}" method="post">
+        <label for="taskName">Task Name:</label>
+        <input type="text" id="taskName" name="name" required>
+        
+        <label for="taskinfo">Task Info:</label>
+        <input type="text" id="taskinfo" name="info" required>
+        
+        <label for="taskStatus">Status:</label>
+        <select id="taskStatus" name="status">
+            <option value="Pending">Pending</option>
+            <option value="Done">Done</option>
+        </select>
+    
+        <button type="submit">Add Task</button>
+    </form>
 </body>
 </html>
