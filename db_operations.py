@@ -15,3 +15,20 @@ def delete_task(db, task_id):
     #not strings, ensuring accurate document operations.
     task_id_obj = ObjectId(task_id)
     db.tasks.delete_one({'_id': task_id_obj})
+
+def update_task_db(db, task_id, name, info, status):
+    # Convert task_id to ObjectId
+    task_id_obj = ObjectId(task_id)
+    
+    # Update the task in the database
+    result = db.tasks.update_one(
+        {'_id': task_id_obj},
+        {'$set': 
+            {
+                'name': name,
+                'info': info,
+                'status': status
+            }
+        }
+    )
+    return result.modified_count  # Returns the count of documents modified

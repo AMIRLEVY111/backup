@@ -14,17 +14,33 @@
 
     <h2>TODO</h2>
 
-    <ul> <!-- Corrected from <u2> -->
+    <ul>
         {% for task in tasks %}
-            <li>{{ task['name'] }}: {{ task['info'] }}  #{{ task['status'] }}
-
-                <div class="task-actions">
-                    <button onclick="location.href='{{ url_for('update_task', task_id=task['_id']) }}'">Update</button>
-                    <button onclick="location.href='{{ url_for('delete_task', task_id=task['_id']) }}'">Delete</button>
-                </div>
+            <li>
+                {% if edit_task_id == (task['_id']|string) %}
+                    <!-- Editing form for the task -->
+                    <form action="{{ url_for('update_task', task_id=task['_id']) }}" method="post">
+                        <input type="text" name="name" value="{{ task['name'] }}" required>
+                        <input type="text" name="info" value="{{ task['info'] }}" required>
+                        <select name="status">
+                            <option value="Pending" {% if task['status'] == 'Pending' %}selected{% endif %}>Pending</option>
+                            <option value="Done" {% if task['status'] == 'Done' %}selected{% endif %}>Done</option>
+                        </select>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                {% else %}
+                    <!-- Display mode for the task -->
+                    {{ task['name'] }}: {{ task['info'] }}  #{{ task['status'] }}
+                    <div class="task-actions">
+                        <a href="{{ url_for('index', edit=task['_id']|string) }}">Update</a>
+                        <a href="{{ url_for('delete_task', task_id=task['_id']) }}">Delete</a>
+                    </div>
+                {% endif %}
             </li>
         {% endfor %}
+            
     </ul>
+
     <form action="{{ url_for('add_task') }}" method="post">
         <label for="taskName">Task Name:</label>
         <input type="text" id="taskName" name="name" required>
@@ -40,5 +56,6 @@
     
         <button type="submit">Add Task</button>
     </form>
+    
 </body>
 </html>

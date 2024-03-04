@@ -3,7 +3,7 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #add8e6; /* Light blue */
+    background-color: #969786; /* Light blue */
     padding: 2px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -20,7 +20,7 @@ ul {
 }
 
 li {
-    background-color: #f9f9f9;
+    background-color: #bebebe;
     margin-bottom: 8px;
     padding: 10px;
     border-radius: 5px;
