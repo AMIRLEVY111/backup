@@ -1,7 +1,12 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
+def check_new_user(username, password_hash, db):
+    existing_user = db.users.find_one({"username": username})
+    return existing_user is None
 
+def add_new_user(username, password_hash, db):
+    db.users.insert_one({"username": username, "password_hash": password_hash})
 # db_operations.py
 def get_all_tasks(db, collection):
     return db.collection.find()

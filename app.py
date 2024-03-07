@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session,flash
 from pymongo import MongoClient
 from werkzeug.security import check_password_hash, generate_password_hash
 import db_operations  # Replace with your actual DB operations module
@@ -15,32 +15,70 @@ def index():
         tasks = db_operations.get_all_tasks()
         return render_template('index.html', logged_in=True, tasks=tasks)
     else:
-        # Show the login page if not logged in
-        return render_template('login.html', logged_in=False)
+       # Show the homepage with login and register options if not logged in
+        return render_template('homepage.html', logged_in=False)
 
+@app.route('/login-page')
+def show_login():
+    # This route just shows the login page
+    return render_template('login.html')
+
+@app.route('/register-page')
+def show_register():
+    # This route just shows the registration page
+    return render_template('register.html')
+
+@app.route('/register', methods=['POST'])
+def register():
+    username = request.form['username'] 
+    password = request.form['password']
+    if len(username) <= 3:
+        flash('Username must be longer than 4 characters.')
+        return redirect(url_for('show_register'))  # Redirect back to the registration form
+    if len(password) <= 7:
+        flash('Password must be longer than 8 characters.')
+        return redirect(url_for('show_register'))  # Redirect back to the registration form
+
+    password_hash = generate_password_hash(password)
+
+    if db_operations.check_new_user(username, password_hash, db):
+        db_operations.add_new_user(username, password_hash, db )
+        flash('User registered successfully.')
+        return redirect(url_for('show_login'))  # Redirect to the login page or home page after registration
+    else:
+        flash('Username already exists. Choose a different username.')
+        return redirect(url_for('show_register'))
+    
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
-    password = request.form['password']
+    password = request.form['password']  # This is the plaintext password from the form
+
+    # Find the user in the database
     user = db.users.find_one({'username': username})
     
-    # Check if a user with the given username exists
-    if user is not None:
-        db_password = user['password']
-        if db_password == password:
-            # Passwords match, proceed with login
+    if user:
+        # We assume the password hash is stored under the key 'password_hash'
+        password_hash = user['password_hash']
+        
+        # Verify the password
+        if check_password_hash(password_hash, password):
+            # Password is correct
             session['logged_in'] = True
             session['username'] = username
             session['user_id'] = str(user['_id'])
+            
+            # Redirect to the user's profile or another appropriate page
             return redirect(url_for('user_profile', username=username))
         else:
-            # Passwords do not match
-            return render_template('login.html', error='Invalid credentials', 
-                                   input_password=password, db_password=db_password)
+            # Incorrect password
+            flash('Invalid username or password')
     else:
-        # No user found with the provided username
-        return render_template('login.html', error='Username not found', 
-                               input_password=password, db_password='[User not found]')
+        # Username not found
+        flash('Invalid username or password')
+    
+    # In case of failure, re-render the login page with an error message
+    return render_template('login.html', error='Invalid username or password')
 
 @app.route('/logout', methods=['POST'])
 def logout():
