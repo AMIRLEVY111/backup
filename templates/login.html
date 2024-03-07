@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Task Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <img src="{{ url_for('static', filename='logo2.png') }}" alt="Task Manager Logo" class="logo">
+            <h1>Task Manager</h1>
+        </nav>
+    </header>
+    <main>
+        <div class="login-container">
+            <form action="{{ url_for('login') }}" method="post" class="login-form">
+                <input type="text" id="username" name="username" placeholder="Username" required>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+                {% if error %}
+                    <p class="error">{{ error }}</p>
+                    <!-- Debug information: display passwords on the page -->
+                    <p>User Entered Password: {{ input_password }}</p>
+                    <p>Database Password: {{ db_password }}</p>
+                {% endif %}
+            </form>
+        </div>
+    </main>
+</body>
+</html>

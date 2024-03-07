@@ -1,27 +1,108 @@
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #add8e6; /* Light blue */
-    padding: 2px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
 body {
-    font-family: 'David', sans-serif;
-    padding-top: 80px; /* Adjust this value based on your header's actual height */
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
-}
-
-ul {
-    list-style-type: none;
     padding: 0;
 }
 
-li {
-    background-color: #f9f9f9;
-    margin-bottom: 8px;
+.navbar {
+    background-color: #05161c;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.logo {
+    height: 50px; /* Adjust as needed */
+    margin-right: 20px;
+}
+
+h1 {
+    margin: 0;
+}
+
+.task-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.task-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: calc(30.333% - 20px); /* Three cards per row with gap */
+}
+
+.task-form,
+.add-task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input[type="text"],
+select {
     padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    background-color: #5cb85c;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4cae4c;
+}
+
+.task-display h3 {
+    margin: 0;
+}
+
+.task-display p {
+    margin: 5px 0;
+}
+
+.status {
+    display: inline-block;
+    padding: 2px 5px;
+    background-color: #eee;
+    border-radius: 4px;
+}
+
+.task-actions {
+    margin-top: 10px;
+}
+
+.edit-btn, .delete-btn { 
+     /* Light blue background */
+    color: white;
+    border: none;
     border-radius: 5px;
+    padding: 3px 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.edit-btn{
+    background-color: #007bff;
+}
+
+.delete-btn{
+    background-color: rgb(247, 23, 23);
+}
+.add-task-form {
+    max-width: 500px;
+    margin: 20px auto;
 }
