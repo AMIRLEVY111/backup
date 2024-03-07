@@ -106,3 +106,29 @@ button:hover {
     max-width: 500px;
     margin: 20px auto;
 }
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Adjust the margin as per your layout */
+    margin-bottom: 20px; 
+}
+
+.logout-form {
+    margin: 0; /* Removes any default margin */
+}
+
+.logout-btn {
+    /* Styles for the logout button, adjust as needed */
+    background-color: #f44336; /* Red color, change as needed */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b; /* Darker shade for hover effect */
+}

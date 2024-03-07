@@ -14,7 +14,12 @@
         </nav>
     </header>
     <main>
-        <h2>Tasks for {{ username }}</h2>
+        <div class="header-container">
+            <h2>Tasks for {{ username }}</h2>
+            <form action="/logout" method="post" class="logout-form">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>            
+        </div>
         <div class="task-container">
             {% for task in tasks %}
                 <div class="task-card">
@@ -29,6 +34,7 @@
                     </div>
                 </div>
             {% endfor %}
+
         </div>
     </main>
 </body>

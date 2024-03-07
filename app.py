@@ -7,6 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 db_client = MongoClient('mongodb://localhost:27017/')
 db = db_client['task_management']
+
 @app.route('/')
 def index():
     if 'logged_in' in session:
@@ -40,6 +41,13 @@ def login():
         # No user found with the provided username
         return render_template('login.html', error='Username not found', 
                                input_password=password, db_password='[User not found]')
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Clear the user session or authentication token
+    session.clear()
+    # Redirect to login page or home page after logout
+    return redirect(url_for('login'))
 
 @app.route('/<username>')
 def user_profile(username):
