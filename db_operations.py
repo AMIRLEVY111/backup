@@ -8,25 +8,29 @@ def check_new_user(username, password_hash, db):
 def add_new_user(username, password_hash, db):
     db.users.insert_one({"username": username, "password_hash": password_hash})
 # db_operations.py
-def get_all_tasks(db, collection):
+
+def get_all_tasks(db, username):
+    collection = db[username]
     return db.collection.find()
 
-def add_task(db, task_name, task_status, task_info):
+def add_task(db, task_name, task_status, task_info, username):
     # Insert the new task into the tasks collection
-    db.tasks.insert_one({'name': task_name, 'status': task_status, 'info': task_info})
+    collection = db[username]
+    collection.insert_one({'name': task_name, 'status': task_status, 'info': task_info})
     
-def delete_task(db, task_id):
+def delete_task(db, task_id, username):
     # Converts the string task_id to an ObjectId because MongoDB uniquely identifies documents using ObjectId
     #not strings, ensuring accurate document operations.
     task_id_obj = ObjectId(task_id)
-    db.tasks.delete_one({'_id': task_id_obj})
+    collection = db[username]
+    collection.delete_one({'_id': task_id_obj})
 
-def update_task_db(db, task_id, name, info, status):
+def update_task_db(db, task_id, name, info, status, username):
     # Convert task_id to ObjectId
     task_id_obj = ObjectId(task_id)
-    
+    collection = db[username]
     # Update the task in the database
-    result = db.tasks.update_one(
+    result = collection.update_one(
         {'_id': task_id_obj},
         {'$set': 
             {

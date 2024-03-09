@@ -12,8 +12,9 @@ db = db_client['task_management']
 def index():
     if 'logged_in' in session:
         # Assuming get_all_tasks() fetches tasks for the logged-in user
-        tasks = db_operations.get_all_tasks()
-        return render_template('index.html', logged_in=True, tasks=tasks)
+        username = session['username'] 
+        tasks = db_operations.get_all_tasks(db, username)
+        return redirect(url_for('user_profile', username=session['username']))
     else:
        # Show the homepage with login and register options if not logged in
         return render_template('homepage.html', logged_in=False)
@@ -53,21 +54,17 @@ def register():
 def login():
     username = request.form['username']
     password = request.form['password']  # This is the plaintext password from the form
-
     # Find the user in the database
     user = db.users.find_one({'username': username})
-    
     if user:
         # We assume the password hash is stored under the key 'password_hash'
         password_hash = user['password_hash']
-        
         # Verify the password
         if check_password_hash(password_hash, password):
             # Password is correct
             session['logged_in'] = True
             session['username'] = username
             session['user_id'] = str(user['_id'])
-            
             # Redirect to the user's profile or another appropriate page
             return redirect(url_for('user_profile', username=username))
         else:
@@ -76,7 +73,6 @@ def login():
     else:
         # Username not found
         flash('Invalid username or password')
-    
     # In case of failure, re-render the login page with an error message
     return render_template('login.html', error='Invalid username or password')
 
@@ -85,49 +81,54 @@ def logout():
     # Clear the user session or authentication token
     session.clear()
     # Redirect to login page or home page after logout
-    return redirect(url_for('login'))
-
+    return redirect(url_for('index'))
 @app.route('/<username>')
 def user_profile(username):
     if 'logged_in' in session and session['username'] == username:
-        # Ensure user_id is properly retrieved and used for task retrieval
         user_id = session.get('user_id')
-        if not user_id:
-            return redirect(url_for('index'))  # Redirect if user_id is not in session
-        
+        edit_task_id = request.args.get('edit_task_id')  # Assuming you pass this as a query parameter.
         tasks = db_operations.get_all_tasks_for_user(db, username)
-        return render_template('user_profile.html', logged_in=True, tasks=tasks, username=username)
+        return render_template('user_profile.html', logged_in=True, tasks=tasks, username=username, user_id=user_id, edit_task_id=edit_task_id)
     else:
-        return redirect(url_for('index'))
-    
+        return redirect(url_for('show_login'))
+
 @app.route('/add_task', methods=['POST'])
 def add_task():
     if 'logged_in' not in session:
-        return redirect(url_for('index'))
-    
+        return redirect(url_for('show_login'))
+    username = session['username'] 
     task_name = request.form['name']
     task_status = request.form['status']
     task_info = request.form['info']
-    db_operations.add_task(db, task_name, task_status, task_info)
+    db_operations.add_task(db, task_name, task_status, task_info, username)
     return redirect(url_for('user_profile', username=session['username']))
 
 @app.route('/update_task/<task_id>', methods=['POST'])
 def update_task(task_id):
     if 'logged_in' not in session:
-        return redirect(url_for('index'))
-    
+        return redirect(url_for('show_login'))
+    username = session['username'] 
     task_name = request.form['name']
     task_info = request.form['info']
     task_status = request.form['status']
-    db_operations.update_task_db(db, task_id, task_name, task_info, task_status)
+    db_operations.update_task_db(db, task_id, task_name, task_info, task_status, username)
     return redirect(url_for('user_profile', username=session['username']))
+
+@app.route('/edit_task/<task_id>')
+def edit_task(task_id):
+    if 'logged_in' not in session:
+        flash('Please log in to edit tasks.')
+        return redirect(url_for('show_login'))
+    # Assuming get_task_by_id is a function in db_operations that retrieves a single task by its ID
+    task_to_edit = db_operations.get_task_by_id(db, task_id)
+    return render_template('edit_task.html', task=task_to_edit)
 
 @app.route('/delete_task/<task_id>', methods=['GET'])
 def delete_task(task_id):
     if 'logged_in' not in session:
-        return redirect(url_for('index'))
-    
-    db_operations.delete_task(db, task_id)
+        return redirect(url_for('show_login'))
+    username = session['username'] 
+    db_operations.delete_task(db, task_id, username)
     return redirect(url_for('user_profile', username=session['username']))
 
 # Ensure the following two functions exist in your db_operations module
